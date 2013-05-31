@@ -172,5 +172,38 @@ set -o vi
 export EDITOR="vim"
 export GIT_EDITOR="vim"
 
-# Add git and svn branch names
-export PS1="$PS1\$(parse_git_branch)\$(parse_svn_branch) "
+# Add git and svn branch names - Stopped using this, I am not a dev but an admin :P
+# export PS1="$PS1\$(parse_git_branch)\$(parse_svn_branch) "
+
+#function aa_pc()
+#{
+#	local M=$( free -olm|sed "/Mem/!d; s/Mem:[^0-9]*\([0-9]*\)[^0-9]*\([0-9]*\)[^0-9]*\([0-9]*\).*/ \
+#	${GREP_COLOR}\2MB${R}\/\3MB/"; ); echo -e "$M `pwd`"
+#}
+#
+#aa_grep_color(){ export GREP_COLOR=`tput setaf $(aa_random_under 6)`; }
+#aa_random_under(){ echo -en $(( $RANDOM % ${1:-$RANDOM} + 1 )); }
+#uptime1(){ sed '/.*,  \([0-9]*\) users,  load average: \(.*\)/!d; s//[ \2, \1 users ]/;q';}
+#
+#sed -n '/i/!Q2' <<< $- && \
+#{
+#	case ${TERM:-dummy} in xterm*|screen*|*color*)echo; ;; *) return; esac;
+#}
+
+# hack for being able to source all the functions in this file from a script
+#MASTER_RESET=$`echo -e "rs1\nrs2\ninitc\nis2\ncnorm\nrmso\nsgr0" | tput -S`
+
+# only for color-aware (some guessing) terminals, kick everyone else OUT
+case ${TERM:-dummy} in xterm*|screen*|*color*)echo; ;; *) return; esac;
+
+[[ -r /etc/DIR_COLORS ]] && eval `dircolors -b /etc/DIR_COLORS`
+
+# changes the window title in terminals like putty or konsole
+#echo -ne "\033]0; ${USER}@${HOSTNAME}  +${SHLVL} @${SSH_TTY/\/dev\/} - `uptime1` \007"
+export PROMPT_COMMAND='echo -en "\033[m\033[38;5;2m"$(( `sed -n "s/MemFree:[\t ]\+\([0-9]\+\) kB/\1/p" /proc/meminfo`/1024))"\033[38;5;22m/"$((`sed -n "s/MemTotal:[\t ]\+\([0-9]\+\) kB/\1/Ip" /proc/meminfo`/1024 ))MB"\t\033[m\033[38;5;55m$(< /proc/loadavg)\033[m"' \
+# Original from the prompt factory - it's just to much for me to look at :)
+#export PS1='\[\e[m\n\e[1;30m\][$$:$PPID \j:\!\[\e[1;30m\]]\[\e[0;36m\] \T \d \[\e[1;30m\][\[\e[1;34m\]\u@\H\[\e[1;30m\]:\[\e[0;37m\]${SSH_TTY} \[\e[0;32m\]+${SHLVL}\[\e[1;30m\]] \[\e[1;37m\]\w\[\e[0;37m\] \n($SHLVL:\!)\$ '
+# Custom bash prompt via kirsle.net/wizards/ps1.html  
+# I removed the filthy \[$(tput bold)\] from the start of the prompt, really who fucken wants that!
+export PS1="\[$(tput setaf 7)\]\n\[$(tput setaf 7)\]\w\n\[$(tput setaf 6)\](\t) \[$(tput setaf 2)\][\u@\h]\[$(tput setaf 3)\]\\$\[$(tput sgr0)\]"
+

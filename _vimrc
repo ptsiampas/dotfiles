@@ -65,16 +65,16 @@ map <leader>ev :vsp %%
 map <leader>et :tabe %%
 
 " -----------------------------------------------------------------------------
-
+" Behavour and Vim layout
+" -----------------------------------------------------------------------------
 set history=700		" Sets how many lines of history VIM has to remember
-
-set nocompatible
-
-set number
+set nocompatible	" Will make vim bheave like vim not vi
+set number		" Turn on the numbering, oh I love numbers.
+set backup		" Make sure I make a backup of the file I am working.
 set backupdir=~/vim/tmp/	" Place to put backups, create directory first.
-set backup
 
-" Use the cool symbols.. 
+" make sure that list mode is on so I can see the hidden characters and change
+" what they look like.
 set list
 set listchars=tab:▸\ ,eol:¬
 " Invisible character colours
@@ -83,6 +83,11 @@ highlight SpecialKey guifg=#4a4a59
 
 
 
+" -----------------------------------------------------------------------------
+" Functions that just help things along
+" Stab = sets the tab stuff globaly
+" 
+" -----------------------------------------------------------------------------
 " Source the vimrc file after saving it
 if has("autocmd")
   autocmd bufwritepost .vimrc source $MYVIMRC
@@ -118,15 +123,18 @@ function! SummarizeTabs()
 	endtry
 endfunction
 
+" -----------------------------------------------------------------------------
 " Only do this part when compiled with support for autocommands
 " This sets up the correct tabs for various files, I may want to expand this
 " to include extra files types that I work with.
+" -----------------------------------------------------------------------------
 if has("autocmd")
   " Enable file type detection
   filetype plugin indent on
    
   " Syntax of these languages is fussy over tabs Vs spaces
   autocmd FileType make setlocal ts=8 sts=8 sw=8 noexpandtab
+  autocmd FileType markdown setlocal ts=4 sts=4 sw=4 noexpandtab
   autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
    
   " Customisations based on house-style (arbitrary)
@@ -138,7 +146,10 @@ if has("autocmd")
   autocmd BufNewFile,BufRead *.rss,*.atom setfiletype xml
 endif
 
-" Returns true if paste mode is enabled
+" -----------------------------------------------------------------------------
+" Returns true if paste mode is enabled,
+" this is used for the status line, so it knows to update it with 'PASTE MODE'
+" -----------------------------------------------------------------------------
 function! HasPaste()
     if &paste
         return 'PASTE MODE  '
