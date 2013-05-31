@@ -1,13 +1,8 @@
 # Holds all my fav and useful alises, plus the stock ones.
 #
 #Stock ones
-# Make sure that ls is all about the colour :)
-alias ls="ls --color=auto"
-alias ll="ls --color=auto -l"
 
 # My handy ones that I just can't do without
-alias ls="ls -F"
-alias ll="ls -lF"
 alias la='ls -a'
 
 alias grep='grep --color=auto'

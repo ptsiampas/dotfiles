@@ -1,17 +1,71 @@
+" -----------------------------------------------------------------------------
+" Call for pathogen stuff, it needs to be first
+" -----------------------------------------------------------------------------
 call pathogen#infect()
-set history=700		" Sets how many lines of history VIM has to remember
+
+
+" -----------------------------------------------------------------------------
+" moving around, searching and patterns
+" -----------------------------------------------------------------------------
+
+" -----------------------------------------------------------------------------
+"  tags
+" -----------------------------------------------------------------------------
+
+
+" -----------------------------------------------------------------------------
+" displaying text
+" -----------------------------------------------------------------------------
+
+
+" -----------------------------------------------------------------------------
+"  syntax, highlighing and spelling
+" -----------------------------------------------------------------------------
 
 " colo delek
-color blackboard	" This is a file that exists in ~/.vim/colors/blackboard.vim
-syntax on		" Turn on syntax highliting
+color blackboard   " This is a file that exists in ~/.vim/colors/blackboard.vim
+syntax on	   " Turn on syntax highliting
+set spelllang=en_au     " Set to my region Australia
+
+" -----------------------------------------------------------------------------
+"  multiple windows
+" -----------------------------------------------------------------------------
+
+
+" -----------------------------------------------------------------------------
+"  mappings
+" -----------------------------------------------------------------------------
+
+" Show invisibles macros.. that I just LOVE!
+nmap <leader>l :set list!<CR>
+
+" Activate spell checking \s
+nmap <silent> <leader>s :set spell!<CR>
+
+" \v will edit the vimrc file in a new tab
+map <leader>v :tabedit $MYVIMRC<CR>
+
+" Whacky specific stuff traversing directories with shortcuts.
+" \ew = Open directory in window
+" \es = Open directory in split window
+" \ev = Open directory in virtical split window
+" \et = Open directory in tab window
+cnoremap %% <C-R>=expand('%:h').'/'<cr>
+map <leader>ew :e %%
+map <leader>es :sp %%
+map <leader>ev :vsp %%
+map <leader>et :tabe %%
+
+" -----------------------------------------------------------------------------
+
+set history=700		" Sets how many lines of history VIM has to remember
+
 set nocompatible
 
 set number
 set backupdir=~/vim/tmp/	" Place to put backups, create directory first.
 set backup
 
-" Show invisibles macros.. that I just LOVE!
-nmap <leader>l :set list!<CR>
 " Use the cool symbols.. 
 set list
 set listchars=tab:▸\ ,eol:¬
@@ -19,18 +73,12 @@ set listchars=tab:▸\ ,eol:¬
 highlight NonText guifg=#4a4a59
 highlight SpecialKey guifg=#4a4a59
 
-" Activate spell checking \s
-nmap <silent> <leader>s :set spell!<CR>
 
-" Set to my region Australia
-set spelllang=en_au
 
 " Source the vimrc file after saving it
 if has("autocmd")
   autocmd bufwritepost .vimrc source $MYVIMRC
 endif
-" \v will edit the vimrc file in a new tab
-map <leader>v :tabedit $MYVIMRC<CR>
 
 " Set tabstop, softtabstop and shiftwidth to the same value
 " Command is :Stab
@@ -82,14 +130,4 @@ if has("autocmd")
   autocmd BufNewFile,BufRead *.rss,*.atom setfiletype xml
 endif
 
-" Whacky specific stuff traversing directories with shortcuts.
-" \ew = Open directory in window
-" \es = Open directory in split window
-" \ev = Open directory in virtical split window
-" \et = Open directory in tab window
-cnoremap %% <C-R>=expand('%:h').'/'<cr>
-map <leader>ew :e %%
-map <leader>es :sp %%
-map <leader>ev :vsp %%
-map <leader>et :tabe %%
 
