@@ -27,6 +27,14 @@ color blackboard   " This is a file that exists in ~/.vim/colors/blackboard.vim
 syntax on	   " Turn on syntax highliting
 set spelllang=en_au     " Set to my region Australia
 
+" Always show the status line
+set laststatus=2
+
+" Format the status line
+set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l
+
+set t_Co=256
+
 " -----------------------------------------------------------------------------
 "  multiple windows
 " -----------------------------------------------------------------------------
@@ -130,4 +138,11 @@ if has("autocmd")
   autocmd BufNewFile,BufRead *.rss,*.atom setfiletype xml
 endif
 
+" Returns true if paste mode is enabled
+function! HasPaste()
+    if &paste
+        return 'PASTE MODE  '
+    en
+    return ''
+endfunction
 
