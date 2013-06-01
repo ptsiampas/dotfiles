@@ -82,7 +82,6 @@ highlight NonText guifg=#4a4a59
 highlight SpecialKey guifg=#4a4a59
 
 
-
 " -----------------------------------------------------------------------------
 " Functions that just help things along
 " Stab = sets the tab stuff globaly
