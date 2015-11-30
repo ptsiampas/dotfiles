@@ -4,3 +4,15 @@
 [submodule "_vim/bundle/vim-markdown"]
 	path = _vim/bundle/vim-markdown
 	url = https://github.com/plasticboy/vim-markdown.git
+[submodule "_vim/bundle/bundle/vim-powerline"]
+	path = _vim/bundle/bundle/vim-powerline
+	url = http://github.com/Lokaltog/vim-powerline.git
+[submodule "_vim/bundle/vim-powerline"]
+	path = _vim/bundle/vim-powerline
+	url = http://github.com/Lokaltog/vim-powerline.git
+[submodule "_vim/bundle/ctrlp.vim"]
+	path = _vim/bundle/ctrlp.vim
+	url = http://github.com/kien/ctrlp.vim.git
+[submodule "_vim/bundle/jedi-vim"]
+	path = _vim/bundle/jedi-vim
+	url = http://github.com/davidhalter/jedi-vim.git
