@@ -145,7 +145,7 @@ if [ "$vim" == "" ]; then
     vim="gvim -v"
 fi
 
-alias vim="$vim"
+# alias vim="$vim"
 
 # osx vim
 if [ -x "/Applications/MacVim.app/Contents/MacOS/Vim" ]; then
@@ -202,7 +202,7 @@ case ${TERM:-dummy} in xterm*|screen*|*color*)echo; ;; *) return; esac;
 #echo -ne "\033]0; ${USER}@${HOSTNAME}  +${SHLVL} @${SSH_TTY/\/dev\/} - `uptime1` \007"
 export PROMPT_COMMAND='echo -en "\033[m\033[38;5;2m"$(( `sed -n "s/MemFree:[\t ]\+\([0-9]\+\) kB/\1/p" /proc/meminfo`/1024))"\033[38;5;22m/"$((`sed -n "s/MemTotal:[\t ]\+\([0-9]\+\) kB/\1/Ip" /proc/meminfo`/1024 ))MB"\t\033[m\033[38;5;55m$(< /proc/loadavg)\033[m"' \
 # Original from the prompt factory - it's just to much for me to look at :)
-#export PS1='\[\e[m\n\e[1;30m\][$$:$PPID \j:\!\[\e[1;30m\]]\[\e[0;36m\] \T \d \[\e[1;30m\][\[\e[1;34m\]\u@\H\[\e[1;30m\]:\[\e[0;37m\]${SSH_TTY} \[\e[0;32m\]+${SHLVL}\[\e[1;30m\]] \[\e[1;37m\]\w\[\e[0;37m\] \n($SHLVL:\!)\$ '
+# export PS1='\[\e[m\n\e[1;30m\][$$:$PPID \j:\!\[\e[1;30m\]]\[\e[0;36m\] \T \d \[\e[1;30m\][\[\e[1;34m\]\u@\H\[\e[1;30m\]:\[\e[0;37m\]${SSH_TTY} \[\e[0;32m\]+${SHLVL}\[\e[1;30m\]] \[\e[1;37m\]\w\[\e[0;37m\] \n($SHLVL:\!)\$ '
 # Custom bash prompt via kirsle.net/wizards/ps1.html  
 # I removed the filthy \[$(tput bold)\] from the start of the prompt, really who fucken wants that!
 export PS1="\[$(tput setaf 7)\]\n\[$(tput setaf 7)\]\w\n\[$(tput setaf 6)\](\t) \[$(tput setaf 2)\][\u@\h]\[$(tput setaf 3)\]\\$\[$(tput sgr0)\]"

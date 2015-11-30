@@ -43,15 +43,23 @@ set t_Co=256
 " -----------------------------------------------------------------------------
 "  mappings
 " -----------------------------------------------------------------------------
+" Map Leader key ,
+let mapleader = ","
 
 " Show invisibles macros.. that I just LOVE!
 nmap <leader>l :set list!<CR>
 
 " Activate spell checking \s
-nmap <silent> <leader>s :set spell!<CR>
+" nmap <silent> <leader>s :set spell!<CR>
+vnoremap <Leader>s : sort<CR>
 
 " \v will edit the vimrc file in a new tab
 map <leader>v :tabedit $MYVIMRC<CR>
+
+" Moving around in tabs
+map <leader>m : <esc>:tabprevious<CR>
+map <leader>n : <esc>:tabnext<CR>
+
 
 " Whacky specific stuff traversing directories with shortcuts.
 " \ew = Open directory in window
@@ -64,6 +72,18 @@ map <leader>es :sp %%
 map <leader>ev :vsp %%
 map <leader>et :tabe %%
 
+" Auto close: parentheses, brackets, braces
+imap { {}<left>
+imap ( ()<left>
+imap [ []<left>
+
+" Reselect visual block after indent/outdent
+vnoremap < <gv
+vnoremap > >gv
+
+" Remove all the trailling whitespaces
+nnoremap <leader>W :%s/\s\+$//<cr>:let @/=''<cr>
+
 " -----------------------------------------------------------------------------
 " Behavour and Vim layout
 " -----------------------------------------------------------------------------
@@ -71,7 +91,12 @@ set history=700		" Sets how many lines of history VIM has to remember
 set nocompatible	" Will make vim bheave like vim not vi
 set number		" Turn on the numbering, oh I love numbers.
 set backup		" Make sure I make a backup of the file I am working.
-set backupdir=~/vim/tmp/	" Place to put backups, create directory first.
+set backupdir=~/.vim/tmp/	" Place to put backups, create directory first.
+set tw=79		" Width of document (used by gd)
+set fo-=t		" don't auto wrap text when typing
+set colorcolumn=80	" set column 80 as a differnt colour
+highlight ColorColumn ctermbg=233
+
 
 " make sure that list mode is on so I can see the hidden characters and change
 " what they look like.
@@ -81,11 +106,59 @@ set listchars=tab:▸\ ,eol:¬
 highlight NonText guifg=#4a4a59
 highlight SpecialKey guifg=#4a4a59
 
+" Highlight trailing whitespace in vim on non empty lines, but not while
+" typing in insert mode!
+highlight ExtraWhitespace ctermbg=red guibg=Brown
+au ColorScheme * highlight ExtraWhitespace guibg=red
+au BufEnter * match ExtraWhitespace /\S\zs\s\+$/
+au InsertEnter * match ExtraWhitespace /\S\zs\s\+\%#\@<!$/
+au InsertLeave * match ExtraWhiteSpace /\S\zs\s\+$/
+
+" =============================================================================
+" Python IDE Setings and Plugins
+" =============================================================================
+" Settings for vim-powerline
+set laststatus=2
+
+" Settings for ctrlp
+let g:ctrlp_max_height=30
+set wildignore+=*.pyc
+set wildignore+=*_build/*
+set wildignore+=*/coverage/*
+
+" Settings for jedi-vim
+" cd ~/.vim/bundle
+" git clone git://github.com/davidhalter/jedi-vim.git
+let g:jedi#usages_command = "<leader>z"
+let g:jedi#popup_on_dot = 0
+let g:jedi#popup_select_first = 0
+map <Leader>b Oimport ipdb; ipdb.set_trace() # BREAKPOINT<C-c>)
+
+" Better navigating through omnicomplete option list
+" See http://stackoverflow.com/questions/2170023/how-to-map-keys-for-popup-menu-in-vim
+set completeopt=longest,menuone
+function! OmniPopup(action)
+    if pumvisible()
+        if a:action == 'j'
+            return "\<C-N>"
+        elseif a:action == 'k'
+            return "\<C-P>"
+        endif
+    endif
+    return a:action
+endfunction
+
+inoremap <silent><C-j> <C-R>=OmniPopup('j')<CR>
+inoremap <silent><C-k> <C-R>=OmniPopup('k')<CR>))))
+
+" Python folding
+" mkdir -p ~/.vim/ftplugin
+" wget -O ~/.vim/ftplugin/python_editing.vim http://www.vim.org/scripts/download_script.php?src_id=5492
+set nofoldenable
 
 " -----------------------------------------------------------------------------
 " Functions that just help things along
 " Stab = sets the tab stuff globaly
-" 
 " -----------------------------------------------------------------------------
 " Source the vimrc file after saving it
 if has("autocmd")
@@ -130,17 +203,17 @@ endfunction
 if has("autocmd")
   " Enable file type detection
   filetype plugin indent on
-   
+
   " Syntax of these languages is fussy over tabs Vs spaces
   autocmd FileType make setlocal ts=8 sts=8 sw=8 noexpandtab
   autocmd FileType markdown setlocal ts=4 sts=4 sw=4 noexpandtab
   autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
-   
+
   " Customisations based on house-style (arbitrary)
   autocmd FileType html setlocal ts=2 sts=2 sw=2 expandtab
   autocmd FileType css setlocal ts=2 sts=2 sw=2 expandtab
   autocmd FileType javascript setlocal ts=4 sts=4 sw=4 noexpandtab
-   
+
   " Treat .rss files as XML
   autocmd BufNewFile,BufRead *.rss,*.atom setfiletype xml
 endif

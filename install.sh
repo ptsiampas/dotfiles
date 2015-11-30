@@ -42,7 +42,7 @@ else
 fi
 
 # Make sure I have a tmp directory for vim
-mkdir -p ~/vim/tmp/
+mkdir -p ~/.vim/tmp/
 
 git submodule update --init --recursive
 git submodule foreach --recursive git pull origin master
