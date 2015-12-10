@@ -89,6 +89,21 @@ vnoremap > >gv
 " Remove all the trailling whitespaces
 nnoremap <leader>W :%s/\s\+$//<cr>:let @/=''<cr>
 
+" Bind nohl
+" Removes highlight of your last search
+" ``<C>`` stands for ``CTRL`` and therefore ``<C-n>`` stands for ``CTRL+n``
+noremap <C-n> :nohl<CR>
+vnoremap <C-n> :nohl<CR>
+inoremap <C-n> :nohl<CR>
+
+
+" bind Ctrl+<movement> keys to move around the windows, instead of using Ctrl+w + <movement>
+" Every unnecessary keystroke that can be saved is good for your health :)
+map <c-j> <c-w>j
+map <c-k> <c-w>k
+map <c-l> <c-w>l
+map <c-h> <c-w>h
+
 " -----------------------------------------------------------------------------
 " Behavour and Vim layout
 " -----------------------------------------------------------------------------
@@ -137,6 +152,7 @@ set wildignore+=*/coverage/*
 let g:jedi#usages_command = "<leader>z"
 let g:jedi#popup_on_dot = 0
 let g:jedi#popup_select_first = 0
+
 map <Leader>b Oimport ipdb; ipdb.set_trace() # BREAKPOINT<C-c>)
 
 " Better navigating through omnicomplete option list
@@ -176,7 +192,7 @@ function! ExecuteFile()
   \   'sh': 'sh'
   \ }
   let cmd = get(filetype_to_command, &filetype, &filetype)
-  call s:ExecuteInShell(cmd." %s", '<bang>')<CR>
+  call RunShellCommand(cmd." %s")
 endfunction
 
 " =============================================================================
@@ -187,37 +203,25 @@ endfunction
 "
 " src: http://vim.wikia.com/wiki/Display_output_of_shell_commands_in_new_window
 " =============================================================================
-let s:_ = ''
-function! s:ExecuteInShell(command, bang)
-	let _ = a:bang != '' ? s:_ : a:command == '' ? '' : join(map(split(a:command), 'expand(v:val)'))
-
-	if (_ != '')
-		let s:_ = _
-		let bufnr = bufnr('%')
-		let winnr = bufwinnr('^' . _ . '$')
-		silent! execute  winnr < 0 ? 'belowright new ' . fnameescape(_) : winnr . 'wincmd w'
-		setlocal buftype=nowrite bufhidden=wipe nobuflisted noswapfile wrap number
-		silent! :%d
-		let message = 'Execute ' . _ . '...'
-		call append(0, message)
-		echo message
-		silent! 2d | resize 1 | redraw
-		silent! execute 'silent! %!'. _
-		silent! execute 'resize ' . line('$')
-		silent! execute 'syntax on'
-		silent! execute 'autocmd BufUnload <buffer> execute bufwinnr(' . bufnr . ') . ''wincmd w'''
-		silent! execute 'autocmd BufEnter <buffer> execute ''resize '' .  line(''$'')'
-		silent! execute 'nnoremap <silent> <buffer> <CR> :call <SID>ExecuteInShell(''' . _ . ''', '''')<CR>'
-		silent! execute 'nnoremap <silent> <buffer> <LocalLeader>r :call <SID>ExecuteInShell(''' . _ . ''', '''')<CR>'
-		silent! execute 'nnoremap <silent> <buffer> <LocalLeader>g :execute bufwinnr(' . bufnr . ') . ''wincmd w''<CR>'
-		nnoremap <silent> <buffer> <C-W>_ :execute 'resize ' . line('$')<CR>
-		silent! syntax on
-	endif
+command! -complete=shellcmd -nargs=+ Shell call RunShellCommand(<q-args>)
+function! RunShellCommand(cmdline)
+  echo a:cmdline
+  let expanded_cmdline = a:cmdline
+  for part in split(a:cmdline, ' ')
+     if part[0] =~ '\v[%#<]'
+        let expanded_part = fnameescape(expand(part))
+        let expanded_cmdline = substitute(expanded_cmdline, part, expanded_part, '')
+     endif
+  endfor
+  botright new
+  setlocal buftype=nofile bufhidden=wipe nobuflisted noswapfile nowrap
+  call setline(1, 'You entered:    ' . a:cmdline)
+  call setline(2, 'Expanded Form:  ' .expanded_cmdline)
+  call setline(3,substitute(getline(2),'.','=','g'))
+  execute '$read !'. expanded_cmdline
+  setlocal nomodifiable
+  1
 endfunction
-
-command! -complete=shellcmd -nargs=* -bang Shell call s:ExecuteInShell(<q-args>, '<bang>')
-cabbrev shell Shell
-
 " -----------------------------------------------------------------------------
 " Functions that just help things along
 " Stab = sets the tab stuff globaly
