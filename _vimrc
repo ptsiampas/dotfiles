@@ -16,7 +16,10 @@ call pathogen#infect()
 " -----------------------------------------------------------------------------
 " displaying text
 " -----------------------------------------------------------------------------
-
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
 
 " -----------------------------------------------------------------------------
 "  syntax, highlighing and spelling
@@ -46,14 +49,16 @@ set t_Co=256
 " Map Leader key ,
 let mapleader = ","
 
+" Execute the current file
+nnoremap <F2> :call ExecuteFile()<CR>
+
 " Show invisibles macros.. that I just LOVE!
 nmap <leader>l :set list!<CR>
 
-" Activate spell checking \s
-" nmap <silent> <leader>s :set spell!<CR>
+" Sort the selected list
 vnoremap <Leader>s : sort<CR>
 
-" \v will edit the vimrc file in a new tab
+" 'v will edit the vimrc file in a new tab
 map <leader>v :tabedit $MYVIMRC<CR>
 
 " Moving around in tabs
@@ -62,10 +67,10 @@ map <leader>n : <esc>:tabnext<CR>
 
 
 " Whacky specific stuff traversing directories with shortcuts.
-" \ew = Open directory in window
-" \es = Open directory in split window
-" \ev = Open directory in virtical split window
-" \et = Open directory in tab window
+" ,ew = Open directory in window
+" ,es = Open directory in split window
+" ,ev = Open directory in virtical split window
+" ,et = Open directory in tab window
 cnoremap %% <C-R>=expand('%:h').'/'<cr>
 map <leader>ew :e %%
 map <leader>es :sp %%
@@ -156,6 +161,63 @@ inoremap <silent><C-k> <C-R>=OmniPopup('k')<CR>))))
 " wget -O ~/.vim/ftplugin/python_editing.vim http://www.vim.org/scripts/download_script.php?src_id=5492
 set nofoldenable
 
+" ========================================================================
+"                          RUN CURRENT FILE                              =
+" ========================================================================
+" Will attempt to execute the current file based on the `&filetype`
+" You need to manually map the filetypes you use most commonly to the
+" correct shell command.
+function! ExecuteFile()
+  let filetype_to_command = {
+  \   'javascript': 'node',
+  \   'coffee': 'coffee',
+  \   'python': 'python',
+  \   'html': 'open',
+  \   'sh': 'sh'
+  \ }
+  let cmd = get(filetype_to_command, &filetype, &filetype)
+  call s:ExecuteInShell(cmd." %s", '<bang>')<CR>
+endfunction
+
+" =============================================================================
+" Enter any shell command and have the output appear in a new buffer          =
+" For example, to word count the current file:
+"
+"   :Shell wc %s
+"
+" src: http://vim.wikia.com/wiki/Display_output_of_shell_commands_in_new_window
+" =============================================================================
+let s:_ = ''
+function! s:ExecuteInShell(command, bang)
+	let _ = a:bang != '' ? s:_ : a:command == '' ? '' : join(map(split(a:command), 'expand(v:val)'))
+
+	if (_ != '')
+		let s:_ = _
+		let bufnr = bufnr('%')
+		let winnr = bufwinnr('^' . _ . '$')
+		silent! execute  winnr < 0 ? 'belowright new ' . fnameescape(_) : winnr . 'wincmd w'
+		setlocal buftype=nowrite bufhidden=wipe nobuflisted noswapfile wrap number
+		silent! :%d
+		let message = 'Execute ' . _ . '...'
+		call append(0, message)
+		echo message
+		silent! 2d | resize 1 | redraw
+		silent! execute 'silent! %!'. _
+		silent! execute 'resize ' . line('$')
+		silent! execute 'syntax on'
+		silent! execute 'autocmd BufUnload <buffer> execute bufwinnr(' . bufnr . ') . ''wincmd w'''
+		silent! execute 'autocmd BufEnter <buffer> execute ''resize '' .  line(''$'')'
+		silent! execute 'nnoremap <silent> <buffer> <CR> :call <SID>ExecuteInShell(''' . _ . ''', '''')<CR>'
+		silent! execute 'nnoremap <silent> <buffer> <LocalLeader>r :call <SID>ExecuteInShell(''' . _ . ''', '''')<CR>'
+		silent! execute 'nnoremap <silent> <buffer> <LocalLeader>g :execute bufwinnr(' . bufnr . ') . ''wincmd w''<CR>'
+		nnoremap <silent> <buffer> <C-W>_ :execute 'resize ' . line('$')<CR>
+		silent! syntax on
+	endif
+endfunction
+
+command! -complete=shellcmd -nargs=* -bang Shell call s:ExecuteInShell(<q-args>, '<bang>')
+cabbrev shell Shell
+
 " -----------------------------------------------------------------------------
 " Functions that just help things along
 " Stab = sets the tab stuff globaly
@@ -210,6 +272,7 @@ if has("autocmd")
   autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 
   " Customisations based on house-style (arbitrary)
+  autocmd FileType python setlocal ts=4 sts=4 sw=4 expandtab
   autocmd FileType html setlocal ts=2 sts=2 sw=2 expandtab
   autocmd FileType css setlocal ts=2 sts=2 sw=2 expandtab
   autocmd FileType javascript setlocal ts=4 sts=4 sw=4 noexpandtab
